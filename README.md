@@ -32,11 +32,29 @@ This function appends a filter to the end of this list.
 This function returns a filter resource which can be passed to [`remove()`](#remove).
 If the given filter can not be added, it throws an `Exception`.
 
+The `$stream` can be any valid stream resource, such as:
+
+```php
+$stream = fopen('demo.txt', 'w+');
+```
+
+The `$callback` should be a valid callable function which accepts an individual chunk of data
+and should return the updated chunk:
+
 ```php
 $filter = Filter\append($stream, function ($chunk) {
     // will be called each time you read or write a $chunk to/from the stream
     return $chunk;
 });
+```
+
+As such, you can also use native PHP functions or any other `callable`:
+
+```php
+Filter\append($stream, 'strtoupper');
+
+// will write "HELLO" to the underlying stream
+fwrite($stream, 'hello');
 ```
 
 The optional `$read_write` parameter can be used to only invoke the `$callback` when either writing to the stream or only when reading from the stream:
