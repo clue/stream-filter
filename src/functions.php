@@ -69,16 +69,21 @@ function builtin($filter, $params = null)
         throw new RuntimeException('Unable to access built-in filter: ' . $error['message']);
     }
 
+    // append filter function which buffers internally
     $buffer = '';
     append($fp, function ($chunk) use (&$buffer) {
         $buffer .= $chunk;
+
+        // always return empty string in order to skip actually writing to stream resource
+        return '';
     }, STREAM_FILTER_WRITE);
 
     return function ($chunk) use ($fp, &$buffer) {
+        // initialize buffer and invoke filters by attempting to write to stream
         $buffer = '';
-
         fwrite($fp, $chunk);
 
+        // buffer now contains everything the filter function returned
         return $buffer;
     };
 }

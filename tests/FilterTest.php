@@ -169,13 +169,20 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     public function testAppendBuiltInDechunk()
     {
+        try {
+            $dechunk = StreamFilter\builtin('dechunk');
+        } catch (Exception $e) {
+            if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
+            throw $e;
+        }
+
         $stream = $this->createStream();
 
-        StreamFilter\append($stream, StreamFilter\builtin('dechunk'), STREAM_FILTER_WRITE);
+        StreamFilter\append($stream, $dechunk, STREAM_FILTER_WRITE);
 
         fwrite($stream, "2\r\nhe\r\n");
         fwrite($stream, "3\r\nllo\r\n");
-        fwrite($stream, "0\r\n");
+        fwrite($stream, "0\r\n\r\n");
         rewind($stream);
 
         $this->assertEquals('hello', stream_get_contents($stream));
@@ -196,8 +203,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testAppendInvalidStreamIsRuntimeError()
     {
-        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
         StreamFilter\append(false, function () { });
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
     }
 
     /**
@@ -205,8 +212,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testPrependInvalidStreamIsRuntimeError()
     {
-        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
         StreamFilter\prepend(false, function () { });
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
     }
 
     /**
@@ -214,8 +221,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testRemoveInvalidFilterIsRuntimeError()
     {
-        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
         StreamFilter\remove(false);
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
     }
 
     /**
