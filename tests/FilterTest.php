@@ -164,6 +164,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testAppendInvalidStreamIsRuntimeError()
     {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
         StreamFilter\append(false, function () { });
     }
 
@@ -172,6 +173,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testPrependInvalidStreamIsRuntimeError()
     {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
         StreamFilter\prepend(false, function () { });
     }
 
@@ -180,6 +182,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testRemoveInvalidFilterIsRuntimeError()
     {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
         StreamFilter\remove(false);
     }
 
