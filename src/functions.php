@@ -49,6 +49,41 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
 }
 
 /**
+ * Creates a filter callback which uses the given built-in $filter
+ *
+ * @param string $filter built-in filter name, see stream_get_filters()
+ * @param mixed  $params additional parameters to pass to the built-in filter
+ * @return callable a filter callback which can be append()'ed or prepend()'ed
+ * @throws RuntimeException on error
+ * @see stream_get_filters()
+ * @see append()
+ */
+function builtin($filter, $params = null)
+{
+    $fp = fopen('php://memory', 'r+');
+    $ret = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);
+
+    if ($ret === false) {
+        fclose($fp);
+        $error = error_get_last() + array('message' => '');
+        throw new RuntimeException('Unable to access built-in filter: ' . $error['message']);
+    }
+
+    $buffer = '';
+    append($fp, function ($chunk) use (&$buffer) {
+        $buffer .= $chunk;
+    }, STREAM_FILTER_WRITE);
+
+    return function ($chunk) use ($fp, &$buffer) {
+        $buffer = '';
+
+        fwrite($fp, $chunk);
+
+        return $buffer;
+    };
+}
+
+/**
  * remove a callback filter from the given stream
  *
  * @param resource $filter

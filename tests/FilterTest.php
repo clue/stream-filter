@@ -159,6 +159,38 @@ class FilterTest extends PHPUnit_Framework_TestCase
         fclose($stream);
     }
 
+    public function testBuiltInRot13()
+    {
+        $rot = StreamFilter\builtin('string.rot13');
+
+        $this->assertEquals('grfg', $rot('test'));
+        $this->assertEquals('test', $rot($rot('test')));
+    }
+
+    public function testAppendBuiltInDechunk()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, StreamFilter\builtin('dechunk'), STREAM_FILTER_WRITE);
+
+        fwrite($stream, "2\r\nhe\r\n");
+        fwrite($stream, "3\r\nllo\r\n");
+        fwrite($stream, "0\r\n");
+        rewind($stream);
+
+        $this->assertEquals('hello', stream_get_contents($stream));
+
+        fclose($stream);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testBuildInInvalid()
+    {
+        StreamFilter\builtin('unknown');
+    }
+
     /**
      * @expectedException RuntimeException
      */
