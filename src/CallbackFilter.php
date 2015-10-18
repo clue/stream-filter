@@ -30,12 +30,21 @@ class CallbackFilter extends php_user_filter
 
     public function filter($in, $out, &$consumed, $closing)
     {
+        // concatenate whole buffer from input brigade
+        $data = '';
         while ($bucket = stream_bucket_make_writeable($in)) {
             $consumed += $bucket->datalen;
+            $data .= $bucket->data;
+        }
 
-            $bucket->data = call_user_func($this->callback, $bucket->data, $closing);
+        // only invoke filter function if buffer is not empty
+        // this may skip flushing a closing filter
+        if ($data !== '') {
+            $data = call_user_func($this->callback, $data);
 
-            stream_bucket_append($out, $bucket);
+            // create a new bucket for writing the resulting buffer to the output brigade
+            // reusing an existing bucket turned out to be bugged in some environments (ancient PHP versions and HHVM)
+            stream_bucket_append($out, stream_bucket_new($this->stream, $data));
         }
 
         return PSFS_PASS_ON;

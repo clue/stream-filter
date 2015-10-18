@@ -21,6 +21,38 @@ class FilterTest extends PHPUnit_Framework_TestCase
         fclose($stream);
     }
 
+    public function testAppendNativePhpFunction()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, 'strtoupper');
+
+        fwrite($stream, 'hello');
+        fwrite($stream, 'world');
+        rewind($stream);
+
+        $this->assertEquals('HELLOWORLD', stream_get_contents($stream));
+
+        fclose($stream);
+    }
+
+    public function testAppendChangingChunkSize()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, function ($chunk) {
+            return str_replace(array('a','e','i','o','u'), '', $chunk);
+        });
+
+        fwrite($stream, 'hello');
+        fwrite($stream, 'world');
+        rewind($stream);
+
+        $this->assertEquals('hllwrld', stream_get_contents($stream));
+
+        fclose($stream);
+    }
+
     public function testAppendReturningEmptyStringWillNotPassThrough()
     {
         $stream = $this->createStream();
