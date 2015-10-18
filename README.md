@@ -2,6 +2,31 @@
 
 A simple and modern approach to stream filtering in PHP
 
+## Why?
+
+PHP's stream filtering system is great!
+
+It offers very powerful stream filtering options and comes with a useful set of built-in filters.
+These filters can be used to easily and efficiently perform various transformations on-the-fly, such as:
+
+* read from a gzip'ed input file,
+* transcode from ISO-8859-1 (Latin1) to UTF-8,
+* write to a bzip output file
+* and much more.
+
+But let's face it:
+Its API is [*difficult to work with*](http://php.net/manual/en/php-user-filter.filter.php)
+and its documentation is [*subpar*](http://stackoverflow.com/questions/27103269/what-is-a-bucket-brigade).
+This combined means its powerful features are often neglected.
+
+This project aims to make these features more accessible to a broader audience.
+* **Lightweight, SOLID design** -
+  Provides a thin abstraction that is [*just good enough*](http://en.wikipedia.org/wiki/Principle_of_good_enough)
+  and does not get in your way.
+  Custom filters require trivial effort.
+* **Good test coverage** -
+  Comes with an automated tests suite and is regularly tested in the *real world*
+
 ## Usage
 
 This lightweight library consists only of a few simple functions.
