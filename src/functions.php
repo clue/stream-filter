@@ -60,10 +60,10 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
  */
 function builtin($filter, $params = null)
 {
-    $fp = fopen('php://memory', 'r+');
-    $ret = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);
+    $fp = fopen('php://memory', 'w');
+    $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);
 
-    if ($ret === false) {
+    if ($filter === false) {
         fclose($fp);
         $error = error_get_last() + array('message' => '');
         throw new RuntimeException('Unable to access built-in filter: ' . $error['message']);
@@ -78,7 +78,18 @@ function builtin($filter, $params = null)
         return '';
     }, STREAM_FILTER_WRITE);
 
-    return function ($chunk) use ($fp, &$buffer) {
+    $closed = false;
+
+    return function ($chunk = null) use ($fp, $filter, &$buffer, &$closed) {
+        if ($closed) {
+            throw new \RuntimeException('Unable to perform operation on closed stream');
+        }
+        if ($chunk === null) {
+            $closed = true;
+            $buffer = '';
+            fclose($fp);
+            return $buffer;
+        }
         // initialize buffer and invoke filters by attempting to write to stream
         $buffer = '';
         fwrite($fp, $chunk);

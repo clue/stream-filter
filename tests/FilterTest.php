@@ -227,6 +227,18 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('grfg', $rot('test'));
         $this->assertEquals('test', $rot($rot('test')));
+        $this->assertEquals(null, $rot());
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testBuiltInWriteAfterCloseRot13()
+    {
+        $rot = StreamFilter\builtin('string.rot13');
+
+        $this->assertEquals(null, $rot());
+        $rot('test');
     }
 
     public function testAppendBuiltInDechunk()
