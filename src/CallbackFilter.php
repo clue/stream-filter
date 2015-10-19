@@ -14,17 +14,23 @@ use InvalidArgumentException;
 class CallbackFilter extends php_user_filter
 {
     private $callback;
+    private $closed = true;
 
     public function onCreate()
     {
+        $this->closed = false;
+
         if (!is_callable($this->params)) {
             throw new InvalidArgumentException('No valid callback parameter given to stream_filter_(append|prepend)');
         }
         $this->callback = $this->params;
+
+        return true;
     }
 
     public function onClose()
     {
+        $this->closed = true;
         $this->callback = null;
     }
 
@@ -37,11 +43,23 @@ class CallbackFilter extends php_user_filter
             $data .= $bucket->data;
         }
 
+        // skip processing callback that already ended
+        if ($this->closed) {
+            return PSFS_FEED_ME;
+        }
+
         // only invoke filter function if buffer is not empty
         // this may skip flushing a closing filter
         if ($data !== '') {
             $data = call_user_func($this->callback, $data);
+        }
 
+        // mark filter as closed after processing closing chunk
+        if ($closing) {
+            $this->closed = true;
+        }
+
+        if ($data !== '') {
             // create a new bucket for writing the resulting buffer to the output brigade
             // reusing an existing bucket turned out to be bugged in some environments (ancient PHP versions and HHVM)
             stream_bucket_append($out, stream_bucket_new($this->stream, $data));
