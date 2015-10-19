@@ -82,6 +82,22 @@ Filter\append($stream, 'strtoupper');
 fwrite($stream, 'hello');
 ```
 
+If the `$callback` accepts invocation without parameters, then this signature
+will be invoked once ending (flushing) the filter:
+
+```php
+Filter\append($stream, function ($chunk = null) {
+    if ($chunk === null) {
+        // will be called once ending the filter
+        return 'end';
+    }
+    // will be called each time you read or write a $chunk to/from the stream
+    return $chunk;
+});
+
+fclose($stream);
+```
+
 The optional `$read_write` parameter can be used to only invoke the `$callback` when either writing to the stream or only when reading from the stream:
 
 ```php

@@ -4,6 +4,8 @@ namespace Clue\StreamFilter;
 
 use php_user_filter;
 use InvalidArgumentException;
+use ReflectionFunction;
+use Exception;
 
 /**
  *
@@ -15,6 +17,7 @@ class CallbackFilter extends php_user_filter
 {
     private $callback;
     private $closed = true;
+    private $supportsClose = false;
 
     public function onCreate()
     {
@@ -25,11 +28,26 @@ class CallbackFilter extends php_user_filter
         }
         $this->callback = $this->params;
 
+        // callback supports end event if it accepts invocation without arguments
+        $ref = new ReflectionFunction($this->callback);
+        $this->supportsClose = ($ref->getNumberOfRequiredParameters() === 0);
+
         return true;
     }
 
     public function onClose()
     {
+        // callback supports closing and is not already closed
+        if ($this->supportsClose) {
+            $this->supportsClose = false;
+            // invoke without argument to signal end and discard resulting buffer
+            try {
+                call_user_func($this->callback);
+            } catch (Exception $ignored) {
+                // ignored
+            }
+        }
+
         $this->closed = true;
         $this->callback = null;
     }
@@ -51,12 +69,26 @@ class CallbackFilter extends php_user_filter
         // only invoke filter function if buffer is not empty
         // this may skip flushing a closing filter
         if ($data !== '') {
-            $data = call_user_func($this->callback, $data);
+            try {
+                $data = call_user_func($this->callback, $data);
+            } catch (Exception $e) {
+                // exception should mark filter as closed
+                $this->onClose();
+                throw $e;
+            }
         }
 
         // mark filter as closed after processing closing chunk
         if ($closing) {
             $this->closed = true;
+
+            // callback supports closing and is not already closed
+            if ($this->supportsClose) {
+                $this->supportsClose = false;
+
+                // invoke without argument to signal end and append resulting buffer
+                $data .= call_user_func($this->callback);
+            }
         }
 
         if ($data !== '') {

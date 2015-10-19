@@ -70,6 +70,49 @@ class FilterTest extends PHPUnit_Framework_TestCase
         fclose($stream);
     }
 
+    public function testAppendEndEventCanBeBufferedOnClose()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, function ($chunk = null) {
+            if ($chunk === null) {
+                // this signals the end event
+                return '!';
+            }
+            return $chunk . ' ';
+        }, STREAM_FILTER_WRITE);
+
+        $buffered = '';
+        StreamFilter\append($stream, function ($chunk) use (&$buffered) {
+            $buffered .= $chunk;
+            return '';
+        });
+
+        fwrite($stream, 'hello');
+        fwrite($stream, 'world');
+
+        fclose($stream);
+
+        $this->assertEquals('hello world !', $buffered);
+    }
+
+    public function testAppendEndEventWillBeCalledOnRemove()
+    {
+        $stream = $this->createStream();
+
+        $ended = false;
+        $filter = StreamFilter\append($stream, function ($chunk = null) use (&$ended) {
+            if ($chunk === null) {
+                $ended = true;
+            }
+            return $chunk;
+        }, STREAM_FILTER_WRITE);
+
+        $this->assertEquals(0, $ended);
+        StreamFilter\remove($filter);
+        $this->assertEquals(1, $ended);
+    }
+
     public function testAppendWriteOnly()
     {
         $stream = $this->createStream();
@@ -168,6 +211,68 @@ class FilterTest extends PHPUnit_Framework_TestCase
         $stream = $this->createStream();
 
         StreamFilter\append($stream, function ($chunk) {
+            throw new \DomainException($chunk);
+        });
+
+        fwrite($stream, 'test');
+    }
+
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage end
+     */
+    public function testAppendThrowsDuringEnd()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, function ($chunk = null) {
+            if ($chunk === null) {
+                throw new \DomainException('end');
+            }
+            return $chunk;
+        });
+
+        fclose($stream);
+    }
+
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage test
+     */
+    public function testAppendThrowsShouldTriggerEnd()
+    {
+        $stream = $this->createStream();
+
+        $ended = false;
+        StreamFilter\append($stream, function ($chunk = null) use (&$ended) {
+            if ($chunk === null) {
+                $ended = true;
+                return '';
+            }
+            throw new \DomainException($chunk);
+        });
+
+        try {
+            $this->assertEquals(false, $ended);
+            fwrite($stream, 'test');
+        } catch (DomainException $e) {
+            $this->assertEquals(true, $ended);
+            throw $e;
+        }
+    }
+
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage test
+     */
+    public function testAppendThrowsShouldTriggerEndButIgnoreExceptionDuringEnd()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, function ($chunk = null) {
+            if ($chunk === null) {
+                $chunk = 'end';
+            }
             throw new \DomainException($chunk);
         });
 
