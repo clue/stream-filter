@@ -72,6 +72,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     public function testAppendEndEventCanBeBufferedOnClose()
     {
+        if (PHP_VERSION < 5.4) $this->markTestSkipped('Not supported on legacy PHP');
+
         $stream = $this->createStream();
 
         StreamFilter\append($stream, function ($chunk = null) {

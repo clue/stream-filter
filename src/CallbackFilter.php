@@ -94,7 +94,14 @@ class CallbackFilter extends php_user_filter
         if ($data !== '') {
             // create a new bucket for writing the resulting buffer to the output brigade
             // reusing an existing bucket turned out to be bugged in some environments (ancient PHP versions and HHVM)
-            stream_bucket_append($out, stream_bucket_new($this->stream, $data));
+            $bucket = @stream_bucket_new($this->stream, $data);
+
+            // legacy PHP versions (PHP < 5.4) do not support passing data from the event signal handler
+            // because closing the stream invalidates the stream and its stream bucket brigade before
+            // invoking the filter close handler.
+            if ($bucket !== false) {
+                stream_bucket_append($out, $bucket);
+            }
         }
 
         return PSFS_PASS_ON;

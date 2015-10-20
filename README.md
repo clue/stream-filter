@@ -98,6 +98,9 @@ Filter\append($stream, function ($chunk = null) {
 fclose($stream);
 ```
 
+> Note: Legacy PHP versions (PHP < 5.4) do not support passing additional data
+from the end signal handler if the stream is being closed.
+
 The optional `$read_write` parameter can be used to only invoke the `$callback` when either writing to the stream or only when reading from the stream:
 
 ```php
