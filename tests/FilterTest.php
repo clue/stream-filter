@@ -115,6 +115,23 @@ class FilterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $ended);
     }
 
+    public function testAppendEndEventWillBeCalledOnClose()
+    {
+        $stream = $this->createStream();
+
+        $ended = false;
+        StreamFilter\append($stream, function ($chunk = null) use (&$ended) {
+            if ($chunk === null) {
+                $ended = true;
+            }
+            return $chunk;
+        }, STREAM_FILTER_WRITE);
+
+        $this->assertEquals(0, $ended);
+        fclose($stream);
+        $this->assertEquals(1, $ended);
+    }
+
     public function testAppendWriteOnly()
     {
         $stream = $this->createStream();
@@ -206,6 +223,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     public function testAppendThrows()
     {
+        $this->createErrorHandler($errors);
+
         $stream = $this->createStream();
         $this->createErrorHandler($errors);
 
@@ -220,13 +239,10 @@ class FilterTest extends PHPUnit_Framework_TestCase
         $this->assertContains('test', $errors[0]);
     }
 
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage end
-     */
     public function testAppendThrowsDuringEnd()
     {
         $stream = $this->createStream();
+        $this->createErrorHandler($errors);
 
         StreamFilter\append($stream, function ($chunk = null) {
             if ($chunk === null) {
@@ -236,15 +252,25 @@ class FilterTest extends PHPUnit_Framework_TestCase
         });
 
         fclose($stream);
+
+        $this->removeErrorHandler();
+
+        // We can only assert we're not seeing an exception here…
+        // * php 5.3-5.6 sees one error here
+        // * php 7 does not any error here
+        // * hhvm seems the same error twice
+        //
+        // If you're curious:
+        //
+        // var_dump($errors);
+        // $this->assertCount(1, $errors);
+        // $this->assertContains('end', $errors[0]);
     }
 
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage test
-     */
     public function testAppendThrowsShouldTriggerEnd()
     {
         $stream = $this->createStream();
+        $this->createErrorHandler($errors);
 
         $ended = false;
         StreamFilter\append($stream, function ($chunk = null) use (&$ended) {
@@ -255,31 +281,34 @@ class FilterTest extends PHPUnit_Framework_TestCase
             throw new \DomainException($chunk);
         });
 
-        try {
-            $this->assertEquals(false, $ended);
-            fwrite($stream, 'test');
-        } catch (DomainException $e) {
-            $this->assertEquals(true, $ended);
-            throw $e;
-        }
+        $this->assertEquals(false, $ended);
+        fwrite($stream, 'test');
+        $this->assertEquals(true, $ended);
+
+        $this->removeErrorHandler();
+        $this->assertCount(1, $errors);
+        $this->assertContains('test', $errors[0]);
     }
 
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage test
-     */
     public function testAppendThrowsShouldTriggerEndButIgnoreExceptionDuringEnd()
     {
+        //$this->markTestIncomplete();
         $stream = $this->createStream();
+        $this->createErrorHandler($errors);
 
         StreamFilter\append($stream, function ($chunk = null) {
             if ($chunk === null) {
                 $chunk = 'end';
+                //return '';
             }
             throw new \DomainException($chunk);
         });
 
         fwrite($stream, 'test');
+
+        $this->removeErrorHandler();
+        $this->assertCount(1, $errors);
+        $this->assertContains('test', $errors[0]);
     }
 
     /**

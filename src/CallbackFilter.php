@@ -37,6 +37,8 @@ class CallbackFilter extends php_user_filter
 
     public function onClose()
     {
+        $this->closed = true;
+
         // callback supports closing and is not already closed
         if ($this->supportsClose) {
             $this->supportsClose = false;
@@ -44,11 +46,12 @@ class CallbackFilter extends php_user_filter
             try {
                 call_user_func($this->callback);
             } catch (Exception $ignored) {
-                // ignored
+                // this might be called during engine shutdown, so it's not safe
+                // to raise any errors or exceptions here
+                // trigger_error('Error closing filter: ' . $ignored->getMessage(), E_USER_WARNING);
             }
         }
 
-        $this->closed = true;
         $this->callback = null;
     }
 
@@ -73,9 +76,9 @@ class CallbackFilter extends php_user_filter
                 $data = call_user_func($this->callback, $data);
             } catch (Exception $e) {
                 // exception should mark filter as closed
-                $this->closed = true;
                 $this->onClose();
                 trigger_error('Error invoking filter: ' . $e->getMessage(), E_USER_WARNING);
+
                 return PSFS_ERR_FATAL;
             }
         }
@@ -89,7 +92,13 @@ class CallbackFilter extends php_user_filter
                 $this->supportsClose = false;
 
                 // invoke without argument to signal end and append resulting buffer
-                $data .= call_user_func($this->callback);
+                try {
+                    $data .= call_user_func($this->callback);
+                } catch (Exception $e) {
+                    trigger_error('Error ending filter: ' . $e->getMessage(), E_USER_WARNING);
+
+                    return PSFS_ERR_FATAL;
+                }
             }
         }
 
