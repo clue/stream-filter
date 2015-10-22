@@ -159,19 +159,20 @@ class FilterTest extends PHPUnit_Framework_TestCase
         fclose($stream);
     }
 
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage test
-     */
     public function testAppendThrows()
     {
         $stream = $this->createStream();
+        $this->createErrorHandler($errors);
 
         StreamFilter\append($stream, function ($chunk) {
             throw new \DomainException($chunk);
         });
 
         fwrite($stream, 'test');
+
+        $this->removeErrorHandler();
+        $this->assertCount(1, $errors);
+        $this->assertContains('test', $errors[0]);
     }
 
     /**
@@ -214,5 +215,18 @@ class FilterTest extends PHPUnit_Framework_TestCase
     private function createStream()
     {
         return fopen('php://memory', 'r+');
+    }
+
+    private function createErrorHandler(&$errors)
+    {
+        $errors = array();
+        set_error_handler(function ($_, $message) use (&$errors) {
+            $errors []= $message;
+        });
+    }
+
+    private function removeErrorHandler()
+    {
+        restore_error_handler();
     }
 }
