@@ -73,8 +73,10 @@ class CallbackFilter extends php_user_filter
                 $data = call_user_func($this->callback, $data);
             } catch (Exception $e) {
                 // exception should mark filter as closed
+                $this->closed = true;
                 $this->onClose();
-                throw $e;
+                trigger_error('Error invoking filter: ' . $e->getMessage(), E_USER_WARNING);
+                return PSFS_ERR_FATAL;
             }
         }
 

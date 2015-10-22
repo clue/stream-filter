@@ -101,6 +101,19 @@ fclose($stream);
 > Note: Legacy PHP versions (PHP < 5.4) do not support passing additional data
 from the end signal handler if the stream is being closed.
 
+If your callback throws an `Exception`, then the filter process will be aborted.
+In order to play nice with PHP's stream handling, the `Exception` will be
+transformed to a PHP warning instead:
+
+```php
+Filter\append($stream, function ($chunk) {
+    throw new \RuntimeException('Unexpected chunk');
+});
+
+// raises an E_USER_WARNING with "Error invoking filter: Unexpected chunk"
+fwrite($stream, 'hello');
+```
+
 The optional `$read_write` parameter can be used to only invoke the `$callback` when either writing to the stream or only when reading from the stream:
 
 ```php
