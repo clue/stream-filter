@@ -4,6 +4,7 @@ namespace Clue\StreamFilter;
 
 use php_user_filter;
 use InvalidArgumentException;
+use Exception;
 
 /**
  *
@@ -51,7 +52,14 @@ class CallbackFilter extends php_user_filter
         // only invoke filter function if buffer is not empty
         // this may skip flushing a closing filter
         if ($data !== '') {
-            $data = call_user_func($this->callback, $data);
+            try {
+                $data = call_user_func($this->callback, $data);
+            } catch (Exception $e) {
+                // exception should mark filter as closed
+                $this->closed = true;
+                trigger_error('Error invoking filter: ' . $e->getMessage(), E_USER_WARNING);
+                return PSFS_ERR_FATAL;
+            }
         }
 
         // mark filter as closed after processing closing chunk

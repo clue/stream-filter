@@ -82,6 +82,19 @@ Filter\append($stream, 'strtoupper');
 fwrite($stream, 'hello');
 ```
 
+If your callback throws an `Exception`, then the filter process will be aborted.
+In order to play nice with PHP's stream handling, the `Exception` will be
+transformed to a PHP warning instead:
+
+```php
+Filter\append($stream, function ($chunk) {
+    throw new \RuntimeException('Unexpected chunk');
+});
+
+// raises an E_USER_WARNING with "Error invoking filter: Unexpected chunk"
+fwrite($stream, 'hello');
+```
+
 The optional `$read_write` parameter can be used to only invoke the `$callback` when either writing to the stream or only when reading from the stream:
 
 ```php
