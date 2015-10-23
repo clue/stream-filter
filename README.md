@@ -82,6 +82,25 @@ Filter\append($stream, 'strtoupper');
 fwrite($stream, 'hello');
 ```
 
+If the `$callback` accepts invocation without parameters, then this signature
+will be invoked once ending (flushing) the filter:
+
+```php
+Filter\append($stream, function ($chunk = null) {
+    if ($chunk === null) {
+        // will be called once ending the filter
+        return 'end';
+    }
+    // will be called each time you read or write a $chunk to/from the stream
+    return $chunk;
+});
+
+fclose($stream);
+```
+
+> Note: Legacy PHP versions (PHP < 5.4) do not support passing additional data
+from the end signal handler if the stream is being closed.
+
 If your callback throws an `Exception`, then the filter process will be aborted.
 In order to play nice with PHP's stream handling, the `Exception` will be
 transformed to a PHP warning instead:

@@ -4,6 +4,7 @@ namespace Clue\StreamFilter;
 
 use php_user_filter;
 use InvalidArgumentException;
+use ReflectionFunction;
 use Exception;
 
 /**
@@ -16,6 +17,7 @@ class CallbackFilter extends php_user_filter
 {
     private $callback;
     private $closed = true;
+    private $supportsClose = false;
 
     public function onCreate()
     {
@@ -26,12 +28,30 @@ class CallbackFilter extends php_user_filter
         }
         $this->callback = $this->params;
 
+        // callback supports end event if it accepts invocation without arguments
+        $ref = new ReflectionFunction($this->callback);
+        $this->supportsClose = ($ref->getNumberOfRequiredParameters() === 0);
+
         return true;
     }
 
     public function onClose()
     {
         $this->closed = true;
+
+        // callback supports closing and is not already closed
+        if ($this->supportsClose) {
+            $this->supportsClose = false;
+            // invoke without argument to signal end and discard resulting buffer
+            try {
+                call_user_func($this->callback);
+            } catch (Exception $ignored) {
+                // this might be called during engine shutdown, so it's not safe
+                // to raise any errors or exceptions here
+                // trigger_error('Error closing filter: ' . $ignored->getMessage(), E_USER_WARNING);
+            }
+        }
+
         $this->callback = null;
     }
 
@@ -56,8 +76,9 @@ class CallbackFilter extends php_user_filter
                 $data = call_user_func($this->callback, $data);
             } catch (Exception $e) {
                 // exception should mark filter as closed
-                $this->closed = true;
+                $this->onClose();
                 trigger_error('Error invoking filter: ' . $e->getMessage(), E_USER_WARNING);
+
                 return PSFS_ERR_FATAL;
             }
         }
@@ -65,12 +86,33 @@ class CallbackFilter extends php_user_filter
         // mark filter as closed after processing closing chunk
         if ($closing) {
             $this->closed = true;
+
+            // callback supports closing and is not already closed
+            if ($this->supportsClose) {
+                $this->supportsClose = false;
+
+                // invoke without argument to signal end and append resulting buffer
+                try {
+                    $data .= call_user_func($this->callback);
+                } catch (Exception $e) {
+                    trigger_error('Error ending filter: ' . $e->getMessage(), E_USER_WARNING);
+
+                    return PSFS_ERR_FATAL;
+                }
+            }
         }
 
         if ($data !== '') {
             // create a new bucket for writing the resulting buffer to the output brigade
             // reusing an existing bucket turned out to be bugged in some environments (ancient PHP versions and HHVM)
-            stream_bucket_append($out, stream_bucket_new($this->stream, $data));
+            $bucket = @stream_bucket_new($this->stream, $data);
+
+            // legacy PHP versions (PHP < 5.4) do not support passing data from the event signal handler
+            // because closing the stream invalidates the stream and its stream bucket brigade before
+            // invoking the filter close handler.
+            if ($bucket !== false) {
+                stream_bucket_append($out, $bucket);
+            }
         }
 
         return PSFS_PASS_ON;
