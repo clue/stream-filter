@@ -166,7 +166,7 @@ The recommended way to install this library is [through composer](https://getcom
 ```JSON
 {
     "require": {
-        "clue/stream-filter": "~1.1"
+        "clue/stream-filter": "~1.2"
     }
 }
 ```
