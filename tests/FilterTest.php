@@ -223,16 +223,11 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     public function testAppendFunDechunk()
     {
-        try {
-            $dechunk = StreamFilter\fun('dechunk');
-        } catch (Exception $e) {
-            if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
-            throw $e;
-        }
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (dechunk filter does not exist)');
 
         $stream = $this->createStream();
 
-        StreamFilter\append($stream, $dechunk, STREAM_FILTER_WRITE);
+        StreamFilter\append($stream, StreamFilter\fun('dechunk'), STREAM_FILTER_WRITE);
 
         fwrite($stream, "2\r\nhe\r\n");
         fwrite($stream, "3\r\nllo\r\n");
@@ -280,8 +275,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
         // We can only assert we're not seeing an exception here…
         // * php 5.3-5.6 sees one error here
-        // * php 7 does not any error here
-        // * hhvm seems the same error twice
+        // * php 7 does not see any error here
+        // * hhvm sees the same error twice
         //
         // If you're curious:
         //
@@ -339,8 +334,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testAppendInvalidStreamIsRuntimeError()
     {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
         StreamFilter\append(false, function () { });
-        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
     }
 
     /**
@@ -348,8 +343,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testPrependInvalidStreamIsRuntimeError()
     {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
         StreamFilter\prepend(false, function () { });
-        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
     }
 
     /**
@@ -357,8 +352,8 @@ class FilterTest extends PHPUnit_Framework_TestCase
      */
     public function testRemoveInvalidFilterIsRuntimeError()
     {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid filters)');
         StreamFilter\remove(false);
-        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
     }
 
     /**
