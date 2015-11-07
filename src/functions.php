@@ -49,7 +49,7 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
 }
 
 /**
- * Creates a filter callback which uses the given built-in $filter
+ * Creates filter fun (function) which uses the given built-in $filter
  *
  * @param string $filter built-in filter name, see stream_get_filters()
  * @param mixed  $params additional parameters to pass to the built-in filter
@@ -58,7 +58,7 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
  * @see stream_get_filters()
  * @see append()
  */
-function builtin($filter, $params = null)
+function fun($filter, $params = null)
 {
     $fp = fopen('php://memory', 'w');
     $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);

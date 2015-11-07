@@ -221,30 +221,10 @@ class FilterTest extends PHPUnit_Framework_TestCase
         fclose($stream);
     }
 
-    public function testBuiltInRot13()
-    {
-        $rot = StreamFilter\builtin('string.rot13');
-
-        $this->assertEquals('grfg', $rot('test'));
-        $this->assertEquals('test', $rot($rot('test')));
-        $this->assertEquals(null, $rot());
-    }
-
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testBuiltInWriteAfterCloseRot13()
-    {
-        $rot = StreamFilter\builtin('string.rot13');
-
-        $this->assertEquals(null, $rot());
-        $rot('test');
-    }
-
-    public function testAppendBuiltInDechunk()
+    public function testAppendFunDechunk()
     {
         try {
-            $dechunk = StreamFilter\builtin('dechunk');
+            $dechunk = StreamFilter\fun('dechunk');
         } catch (Exception $e) {
             if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM');
             throw $e;
@@ -262,14 +242,6 @@ class FilterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('hello', stream_get_contents($stream));
 
         fclose($stream);
-    }
-
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testBuildInInvalid()
-    {
-        StreamFilter\builtin('unknown');
     }
 
     public function testAppendThrows()

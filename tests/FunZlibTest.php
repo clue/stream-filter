@@ -4,9 +4,9 @@ use Clue\StreamFilter;
 
 class BuiltInZlibTest extends PHPUnit_Framework_TestCase
 {
-    public function testBuiltInZlibDeflateEmpty()
+    public function testFunZlibDeflateEmpty()
     {
-        $deflate = StreamFilter\builtin('zlib.deflate');
+        $deflate = StreamFilter\fun('zlib.deflate');
 
         //$data = gzdeflate('');
         $data = $deflate();
@@ -14,9 +14,9 @@ class BuiltInZlibTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("\x03\x00", $data);
     }
 
-    public function testBuiltInZlibDeflateBig()
+    public function testFunZlibDeflateBig()
     {
-        $deflate = StreamFilter\builtin('zlib.deflate');
+        $deflate = StreamFilter\fun('zlib.deflate');
 
         $n = 1000;
         $expected = str_repeat('hello', $n);
@@ -30,9 +30,9 @@ class BuiltInZlibTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, gzinflate($bytes));
     }
 
-    public function testBuiltInZlibInflateBig()
+    public function testFunZlibInflateBig()
     {
-        $inflate = StreamFilter\builtin('zlib.inflate');
+        $inflate = StreamFilter\fun('zlib.inflate');
 
         $expected = str_repeat('hello', 10);
         $bytes = gzdeflate($expected);
