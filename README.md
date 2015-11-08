@@ -212,7 +212,7 @@ $fun('test'); // throws RuntimeException
 about engine inconsistencies between different PHP versions and HHVM.
 These inconsistencies exist in the underlying PHP engines and there's little we
 can do about this in this library.
-Our test suite contains several test cases that exhibit these issues.
+[Our test suite](tests/) contains several test cases that exhibit these issues.
 If you feel some test case is missing or outdated, we're happy to accept PRs! :)
 
 ### remove()
