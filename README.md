@@ -243,12 +243,8 @@ Filter\remove($filter);
 The recommended way to install this library is [through composer](https://getcomposer.org).
 [New to composer?](https://getcomposer.org/doc/00-intro.md)
 
-```JSON
-{
-    "require": {
-        "clue/stream-filter": "~1.2"
-    }
-}
+```bash
+$ composer require clue/stream-filter:~1.3
 ```
 
 ## License
