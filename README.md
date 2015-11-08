@@ -2,6 +2,17 @@
 
 A simple and modern approach to stream filtering in PHP
 
+**Table of contents**
+
+* [Why?](#why)
+* [Usage](#usage)
+  * [append()](#append)
+  * [prepend()](#prepend)
+  * [fun()](#fun)
+  * [remove()](#remove)
+* [Install](#install)
+* [License](#license)
+
 ## Why?
 
 PHP's stream filtering system is great!
