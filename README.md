@@ -146,6 +146,75 @@ $filter = Filter\prepend($stream, function ($chunk) {
 });
 ```
 
+### fun()
+
+The `fun($filter, $parameters = null)` function can be used to
+create a filter function which uses the given built-in `$filter`.
+
+PHP comes with a useful set of [built-in filters](http://php.net/manual/en/filters.php).
+Using `fun()` makes accessing these as easy as passing an input string to filter
+and getting the filtered output string.
+
+```php
+$fun = Filter\fun('string.rot13');
+
+assert('grfg' === $fun('test'));
+assert('test' === $fun($fun('test'));
+```
+
+Please note that not all filter functions may be available depending on installed
+PHP extensions and the PHP version in use.
+In particular, [HHVM](http://hhvm.com/) may not offer the same filter functions
+or parameters as Zend PHP.
+Accessing an unknown filter function will result in a `RuntimeException`:
+
+```php
+Filter\fun('unknown'); // throws RuntimeException
+```
+
+Some filters may accept or require additional filter parameters.
+The optional `$parameters` argument will be passed to the filter handler as-is.
+Please refer to the individual filter definition for more details.
+For example, the `string.strip_tags` filter can be invoked like this:
+
+```php
+$fun = Filter\fun('string.strip_tags', '<a><b>');
+
+$ret = $fun('<b>h<br>i</b>');
+assert('<b>hi</b>' === $ret);
+```
+
+Under the hood, this function allocates a temporary memory stream, so it's
+recommended to clean up the filter function after use.
+Also, some filter functions (in particular the
+[zlib compression filters](http://php.net/manual/en/filters.compression.php))
+may use internal buffers and may emit a final data chunk on close.
+The filter function can be closed by invoking without any arguments:
+
+```php
+$fun = Filter\fun('zlib.deflate');
+
+$ret = $fun('hello') . $fun('world') . $fun();
+assert('helloworld' === gzinflate($ret));
+```
+
+The filter function must not be used anymore after it has been closed.
+Doing so will result in a `RuntimeException`:
+
+```php
+$fun = Filter\fun('string.rot13');
+$fun();
+
+$fun('test'); // throws RuntimeException
+```
+
+> Note: If you're using the zlib compression filters, then you should be wary
+about engine inconsistencies between different PHP versions and HHVM.
+These inconsistencies exist in the underlying PHP engines and there's little we
+can do about this in this library.
+[Our test suite](tests/) contains several test cases that exhibit these issues.
+If you feel some test case is missing or outdated, we're happy to accept PRs! :)
+
 ### remove()
 
 The `remove($filter)` function can be used to
