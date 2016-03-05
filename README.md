@@ -10,6 +10,7 @@ A simple and modern approach to stream filtering in PHP
   * [prepend()](#prepend)
   * [fun()](#fun)
   * [remove()](#remove)
+* [Limitations](#limitations)
 * [Install](#install)
 * [License](#license)
 
@@ -237,6 +238,20 @@ $filter = Filter\append($stream, function () {
 });
 Filter\remove($filter);
 ```
+
+## Limitations
+
+Once a filter has been added to stream, the stream can no longer be passed to
+[`stream_select()`](http://php.net/manual/en/function.stream-select.php)
+(and family).
+
+> Warning: stream_select(): cannot cast a filtered stream on this system in {X} on line {Y}
+
+This is due to limitations of PHP's stream filter support, as it can no longer reliably
+tell when the underlying stream resource is actually ready.
+
+As an alternative, consider calling `stream_select()` on the unfiltered stream and
+then pass the unfiltered data through the [`fun()`](#fun) function.
 
 ## Install
 
