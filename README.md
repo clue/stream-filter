@@ -258,9 +258,13 @@ then pass the unfiltered data through the [`fun()`](#fun) function.
 The recommended way to install this library is [through composer](https://getcomposer.org).
 [New to composer?](https://getcomposer.org/doc/00-intro.md)
 
+This will install the latest supported version:
+
 ```bash
-$ composer require clue/stream-filter:~1.3
+$ composer require clue/stream-filter:^1.3
 ```
+
+More details about version upgrades can be found in the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
