@@ -330,6 +330,22 @@ class FilterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage test
+     */
+    public function testAppendCleanup()
+    {
+        $stream = $this->createStream();
+
+        StreamFilter\append($stream, function ($chunk) {
+            return $chunk;
+        });
+
+        // leaving scope should invoke proper cleanup
+        throw new \DomainException('test');
+    }
+
+    /**
      * @expectedException RuntimeException
      */
     public function testAppendInvalidStreamIsRuntimeError()
