@@ -2,15 +2,15 @@
 
 ## 1.3.0 (2015-11-08)
 
-* Feature: Support accessing built-in filters as callbacks
-  (#5 by @clue)
+*   Feature: Support accessing built-in filters as callbacks
+    (#5 by @clue)
 
-  ```php
-$fun = Filter\fun('zlib.deflate');
+    ```php
+    $fun = Filter\fun('zlib.deflate');
 
-$ret = $fun('hello') . $fun('world') . $fun();
-assert('helloworld' === gzinflate($ret));
-```
+    $ret = $fun('hello') . $fun('world') . $fun();
+    assert('helloworld' === gzinflate($ret));
+    ```
 
 ## 1.2.0 (2015-10-23)
 
