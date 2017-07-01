@@ -61,7 +61,11 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
 function fun($filter, $params = null)
 {
     $fp = fopen('php://memory', 'w');
-    $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);
+    if (null === $params) {
+        $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE);
+    } else {
+        $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);
+    }
 
     if ($filter === false) {
         fclose($fp);
