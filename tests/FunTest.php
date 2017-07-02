@@ -34,18 +34,18 @@ class FunTest extends PHPUnit_Framework_TestCase
 
     public function testFunInBase64()
     {
-        $encode = Filter\fun('convert.base64-encode', []);
-        $decode = Filter\fun('convert.base64-decode', []);
+        $encode = Filter\fun('convert.base64-encode', array());
+        $decode = Filter\fun('convert.base64-decode', array());
 
         $string = 'test';
         $this->assertEquals(base64_encode($string), $encode($string) . $encode());
         $this->assertEquals($string, $decode(base64_encode($string)));
 
-        $encode = Filter\fun('convert.base64-encode', []);
-        $decode = Filter\fun('convert.base64-decode', []);
+        $encode = Filter\fun('convert.base64-encode', array());
+        $decode = Filter\fun('convert.base64-decode', array());
         $this->assertEquals($string, $decode($encode($string) . $encode()));
 
-        $encode = Filter\fun('convert.base64-encode', []);
+        $encode = Filter\fun('convert.base64-encode', array());
         $this->assertEquals(null, $encode());
     }
 }
