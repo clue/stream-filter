@@ -228,6 +228,13 @@ can do about this in this library.
 [Our test suite](tests/) contains several test cases that exhibit these issues.
 If you feel some test case is missing or outdated, we're happy to accept PRs! :)
 
+##### Warning
+
+There is different behavior of this function depending how many arguments you use. 
+`fun($filter)` and `fun($filter, null)` does not necessarily give the same result. 
+This strange behavior is copied from the underlying API of `stream_filter_append`.
+Generally, it is a good idea to never pass `null` as second parameter.  
+
 ### remove()
 
 The `remove($filter)` function can be used to
