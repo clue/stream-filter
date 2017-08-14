@@ -53,7 +53,7 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
  *
  * WARNING: Take note that fun($filter) and fun($filter, null) have different behaviors.
  *
- * @param string $filter built-in filter name, see stream_get_filters()
+ * @param string $filter built-in filter name. See stream_get_filters() or http://php.net/manual/en/filters.php
  * @param mixed  $params additional parameters to pass to the built-in filter
  * @return callable a filter callback which can be append()'ed or prepend()'ed
  * @throws RuntimeException on error
