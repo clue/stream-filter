@@ -10,7 +10,6 @@ A simple and modern approach to stream filtering in PHP
   * [prepend()](#prepend)
   * [fun()](#fun)
   * [remove()](#remove)
-* [Limitations](#limitations)
 * [Install](#install)
 * [Tests](#tests)
 * [License](#license)
@@ -141,6 +140,17 @@ Filter\append($stream, function ($chunk) {
 }, STREAM_FILTER_READ);
 ```
 
+> Note that once a filter has been added to stream, the stream can no longer be passed to
+> [`stream_select()`](http://php.net/manual/en/function.stream-select.php)
+> (and family).
+>
+> > Warning: stream_select(): cannot cast a filtered stream on this system in {file} on line {line}
+>
+> This is due to limitations of PHP's stream filter support, as it can no longer reliably
+> tell when the underlying stream resource is actually ready.
+> As an alternative, consider calling `stream_select()` on the unfiltered stream and
+> then pass the unfiltered data through the [`fun()`](#fun) function.
+
 ### prepend()
 
 The `prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)` function can be used to
@@ -158,6 +168,10 @@ $filter = Filter\prepend($stream, function ($chunk) {
     return $chunk;
 });
 ```
+
+Except for the position in the list of filters, this function behaves exactly
+like the [`append()`](#append) function.
+For more details about its behavior, see also the [`append()`](#append) function.
 
 ### fun()
 
@@ -185,8 +199,12 @@ Accessing an unknown filter function will result in a `RuntimeException`:
 Filter\fun('unknown'); // throws RuntimeException
 ```
 
-Some filters may accept or require additional filter parameters.
-The optional `$parameters` argument will be passed to the filter handler as-is.
+Some filters may accept or require additional filter parameters – most
+filters do not require filter parameters.
+If given, the optional `$parameters` argument will be passed to the
+underlying filter handler as-is.
+In particular, note how *not passing* this parameter at all differs from
+explicitly passing a `null` value (which many filters do not accept).
 Please refer to the individual filter definition for more details.
 For example, the `string.strip_tags` filter can be invoked like this:
 
@@ -228,13 +246,6 @@ can do about this in this library.
 [Our test suite](tests/) contains several test cases that exhibit these issues.
 If you feel some test case is missing or outdated, we're happy to accept PRs! :)
 
-##### Warning
-
-There is different behavior of this function depending how many arguments you use. 
-`fun($filter)` and `fun($filter, null)` does not necessarily give the same result. 
-This strange behavior is copied from the underlying API of `stream_filter_append`.
-Generally, it is a good idea to never pass `null` as second parameter.  
-
 ### remove()
 
 The `remove($filter)` function can be used to
@@ -246,20 +257,6 @@ $filter = Filter\append($stream, function () {
 });
 Filter\remove($filter);
 ```
-
-## Limitations
-
-Once a filter has been added to stream, the stream can no longer be passed to
-[`stream_select()`](http://php.net/manual/en/function.stream-select.php)
-(and family).
-
-> Warning: stream_select(): cannot cast a filtered stream on this system in {X} on line {Y}
-
-This is due to limitations of PHP's stream filter support, as it can no longer reliably
-tell when the underlying stream resource is actually ready.
-
-As an alternative, consider calling `stream_select()` on the unfiltered stream and
-then pass the unfiltered data through the [`fun()`](#fun) function.
 
 ## Install
 
