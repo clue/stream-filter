@@ -1,18 +1,21 @@
 language: php
 
 php:
-  - 5.3
+# - 5.3 # requires old distro, see below
   - 5.4
   - 5.5
   - 5.6
   - 7.0
   - 7.1
+  - hhvm # ignore errors, see below
 
-# also test against HHVM, but require "trusty" and ignore errors
+# lock distro so new future defaults will not break the build
+dist: trusty
+
 matrix:
   include:
-    - php: hhvm
-      dist: trusty
+    - php: 5.3
+      dist: precise
   allow_failures:
     - php: hhvm
 
