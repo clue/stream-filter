@@ -13,6 +13,16 @@ class FunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $rot());
     }
 
+    public function testFunInQuotedPrintable()
+    {
+        $encode = Filter\fun('convert.quoted-printable-encode');
+        $decode = Filter\fun('convert.quoted-printable-decode');
+
+        $this->assertEquals('t=C3=A4st', $encode('täst'));
+        $this->assertEquals('täst', $decode($encode('täst')));
+        $this->assertEquals(null, $encode());
+    }
+
     /**
      * @expectedException RuntimeException
      */
