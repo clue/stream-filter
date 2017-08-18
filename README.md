@@ -260,16 +260,22 @@ Filter\remove($filter);
 
 ## Install
 
-The recommended way to install this library is [through composer](https://getcomposer.org).
-[New to composer?](https://getcomposer.org/doc/00-intro.md)
+The recommended way to install this library is [through Composer](https://getcomposer.org).
+[New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/stream-filter:^1.3
+$ composer require clue/stream-filter:^1.4
 ```
 
-More details about version upgrades can be found in the [CHANGELOG](CHANGELOG.md).
+See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
+
+This project aims to run on any platform and thus does not require any PHP
+extensions and supports running on legacy PHP 5.3 through current PHP 7+ and
+HHVM.
+It's *highly recommended to use PHP 7+* for this project.
+Older PHP versions may suffer from a number of inconsistencies documented above.
 
 ## Tests
 
