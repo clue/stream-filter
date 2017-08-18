@@ -51,22 +51,29 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
 /**
  * Creates filter fun (function) which uses the given built-in $filter
  *
- * WARNING: Take note that fun($filter) and fun($filter, null) have different behaviors.
+ * Some filters may accept or require additional filter parameters – most
+ * filters do not require filter parameters.
+ * If given, the optional `$parameters` argument will be passed to the
+ * underlying filter handler as-is.
+ * In particular, note how *not passing* this parameter at all differs from
+ * explicitly passing a `null` value (which many filters do not accept).
+ * Please refer to the individual filter definition for more details.
  *
- * @param string $filter built-in filter name. See stream_get_filters() or http://php.net/manual/en/filters.php
- * @param mixed  $params additional parameters to pass to the built-in filter
+ * @param string $filter     built-in filter name. See stream_get_filters() or http://php.net/manual/en/filters.php
+ * @param mixed  $parameters (optional) parameters to pass to the built-in filter as-is
  * @return callable a filter callback which can be append()'ed or prepend()'ed
  * @throws RuntimeException on error
+ * @link http://php.net/manual/en/filters.php
  * @see stream_get_filters()
  * @see append()
  */
-function fun($filter, $params = null)
+function fun($filter, $parameters = null)
 {
     $fp = fopen('php://memory', 'w');
     if (func_num_args() === 1) {
         $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE);
     } else {
-        $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $params);
+        $filter = @stream_filter_append($fp, $filter, STREAM_FILTER_WRITE, $parameters);
     }
 
     if ($filter === false) {
