@@ -215,6 +215,8 @@ $ret = $fun('<b>h<br>i</b>');
 assert('<b>hi</b>' === $ret);
 ```
 
+#### Clean the filter function
+
 Under the hood, this function allocates a temporary memory stream, so it's
 recommended to clean up the filter function after use.
 Also, some filter functions (in particular the
