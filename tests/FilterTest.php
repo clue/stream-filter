@@ -1,8 +1,11 @@
 <?php
 
-use Clue\StreamFilter;
+namespace Clue\Tests\StreamFilter;
 
-class FilterTest extends PHPUnit\Framework\TestCase
+use Clue\StreamFilter;
+use PHPUnit\Framework\TestCase;
+
+class FilterTest extends TestCase
 {
     public function testAppendSimpleCallback()
     {

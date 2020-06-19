@@ -1,8 +1,11 @@
 <?php
 
-use Clue\StreamFilter as Filter;
+namespace Clue\Tests\StreamFilter;
 
-class FunTest extends PHPUnit\Framework\TestCase
+use Clue\StreamFilter as Filter;
+use PHPUnit\Framework\TestCase;
+
+class FunTest extends TestCase
 {
     public function testFunInRot13()
     {

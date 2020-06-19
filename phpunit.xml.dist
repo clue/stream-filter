@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="vendor/autoload.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
->
+<phpunit bootstrap="vendor/autoload.php" colors="true">
     <testsuites>
         <testsuite name="Stream Filter Test Suite">
             <directory>./tests/</directory>

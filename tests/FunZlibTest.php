@@ -1,8 +1,11 @@
 <?php
 
-use Clue\StreamFilter;
+namespace Clue\Tests\StreamFilter;
 
-class BuiltInZlibTest extends PHPUnit\Framework\TestCase
+use Clue\StreamFilter;
+use PHPUnit\Framework\TestCase;
+
+class BuiltInZlibTest extends TestCase
 {
     public function testFunZlibDeflateHelloWorld()
     {

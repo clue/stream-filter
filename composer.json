@@ -19,5 +19,8 @@
     "autoload": {
         "psr-4": { "Clue\\StreamFilter\\": "src/" },
         "files": [ "src/functions_include.php" ]
+    },
+    "autoload-dev": {
+        "psr-4": { "Clue\\Tests\\StreamFilter\\": "tests/" }
     }
 }
