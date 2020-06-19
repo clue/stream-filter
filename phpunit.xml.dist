@@ -7,7 +7,7 @@
          convertWarningsToExceptions="true"
 >
     <testsuites>
-        <testsuite>
+        <testsuite name="Stream Filter Test Suite">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>

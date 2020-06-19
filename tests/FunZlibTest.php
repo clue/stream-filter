@@ -2,7 +2,7 @@
 
 use Clue\StreamFilter;
 
-class BuiltInZlibTest extends PHPUnit_Framework_TestCase
+class BuiltInZlibTest extends PHPUnit\Framework\TestCase
 {
     public function testFunZlibDeflateHelloWorld()
     {
