@@ -14,10 +14,13 @@
         "php": ">=5.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0 || ^4.8"
+        "phpunit/phpunit": "^9.0 || ^5.7 || ^4.8.36"
     },
     "autoload": {
         "psr-4": { "Clue\\StreamFilter\\": "src/" },
         "files": [ "src/functions_include.php" ]
+    },
+    "autoload-dev": {
+        "psr-4": { "Clue\\Tests\\StreamFilter\\": "tests/" }
     }
 }

@@ -1,8 +1,11 @@
 <?php
 
-use Clue\StreamFilter;
+namespace Clue\Tests\StreamFilter;
 
-class FilterTest extends PHPUnit_Framework_TestCase
+use Clue\StreamFilter;
+use PHPUnit\Framework\TestCase;
+
+class FilterTest extends TestCase
 {
     public function testAppendSimpleCallback()
     {
@@ -254,9 +257,12 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
         $this->removeErrorHandler();
         $this->assertCount(1, $errors);
-        $this->assertContains('test', $errors[0]);
+        $this->assertContainsString('test', $errors[0]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testAppendThrowsDuringEnd()
     {
         $stream = $this->createStream();
@@ -305,7 +311,7 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
         $this->removeErrorHandler();
         $this->assertCount(1, $errors);
-        $this->assertContains('test', $errors[0]);
+        $this->assertContainsString('test', $errors[0]);
     }
 
     public function testAppendThrowsShouldTriggerEndButIgnoreExceptionDuringEnd()
@@ -326,41 +332,33 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
         $this->removeErrorHandler();
         $this->assertCount(1, $errors);
-        $this->assertContains('test', $errors[0]);
+        $this->assertContainsString('test', $errors[0]);
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testAppendInvalidStreamIsRuntimeError()
     {
+        $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
         StreamFilter\append(false, function () { });
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testPrependInvalidStreamIsRuntimeError()
     {
+        $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
         StreamFilter\prepend(false, function () { });
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testRemoveInvalidFilterIsRuntimeError()
     {
+        $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid filters)');
         StreamFilter\remove(false);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testInvalidCallbackIsInvalidArgument()
     {
+        $this->setExpectedException('InvalidArgumentException');
         $stream = $this->createStream();
 
         StreamFilter\append($stream, 'a-b-c');
@@ -383,4 +381,27 @@ class FilterTest extends PHPUnit_Framework_TestCase
     {
         restore_error_handler();
     }
+
+    public function setExpectedException($exception, $message = '', $code = 0)
+    {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($exception);
+            if ($message !== '') {
+                $this->expectExceptionMessage($message);
+            }
+            $this->expectExceptionCode($code);
+        } else {
+            parent::setExpectedException($exception, $message, $code);
+        }
+    }
+
+    public function assertContainsString($needle, $haystack)
+    {
+        if (method_exists($this, 'assertStringContainsString')) {
+            $this->assertStringContainsString($needle, $haystack);
+        } else {
+            $this->assertContains($needle, $haystack);
+        }
+    }
+
 }

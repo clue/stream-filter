@@ -1,8 +1,11 @@
 <?php
 
-use Clue\StreamFilter as Filter;
+namespace Clue\Tests\StreamFilter;
 
-class FunTest extends PHPUnit_Framework_TestCase
+use Clue\StreamFilter as Filter;
+use PHPUnit\Framework\TestCase;
+
+class FunTest extends TestCase
 {
     public function testFunInRot13()
     {
@@ -23,22 +26,18 @@ class FunTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $encode());
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testFunWriteAfterCloseRot13()
     {
+        $this->setExpectedException('RuntimeException');
         $rot = Filter\fun('string.rot13');
 
         $this->assertEquals(null, $rot());
         $rot('test');
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testFunInvalid()
     {
+        $this->setExpectedException('RuntimeException');
         Filter\fun('unknown');
     }
 
@@ -58,4 +57,18 @@ class FunTest extends PHPUnit_Framework_TestCase
         $encode = Filter\fun('convert.base64-encode');
         $this->assertEquals(null, $encode());
     }
+
+    public function setExpectedException($exception, $message = '', $code = 0)
+    {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($exception);
+            if ($message !== '') {
+                $this->expectExceptionMessage($message);
+            }
+            $this->expectExceptionCode($code);
+        } else {
+            parent::setExpectedException($exception, $message, $code);
+        }
+    }
+
 }
