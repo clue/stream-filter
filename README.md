@@ -60,13 +60,12 @@ Alternatively, you can also refer to them with their fully-qualified name:
 
 ### append()
 
-The `append($stream, $callback, $read_write = STREAM_FILTER_ALL)` function can be used to
+The `append(resource<stream> $stream, callable $callback, int $read_write = STREAM_FILTER_ALL): resource<stream filter>` function can be used to
 append a filter callback to the given stream.
 
 Each stream can have a list of filters attached.
 This function appends a filter to the end of this list.
 
-This function returns a filter resource which can be passed to [`remove()`](#remove).
 If the given filter can not be added, it throws an `Exception`.
 
 The `$stream` can be any valid stream resource, such as:
@@ -75,8 +74,8 @@ The `$stream` can be any valid stream resource, such as:
 $stream = fopen('demo.txt', 'w+');
 ```
 
-The `$callback` should be a valid callable function which accepts an individual chunk of data
-and should return the updated chunk:
+The `$callback` should be a valid callable function which accepts 
+an individual chunk of data and should return the updated chunk:
 
 ```php
 $filter = Filter\append($stream, function ($chunk) {
@@ -94,8 +93,8 @@ Filter\append($stream, 'strtoupper');
 fwrite($stream, 'hello');
 ```
 
-If the `$callback` accepts invocation without parameters, then this signature
-will be invoked once ending (flushing) the filter:
+If the `$callback` accepts invocation without parameters,
+then this signature will be invoked once ending (flushing) the filter:
 
 ```php
 Filter\append($stream, function ($chunk = null) {
@@ -114,8 +113,8 @@ fclose($stream);
 from the end signal handler if the stream is being closed.
 
 If your callback throws an `Exception`, then the filter process will be aborted.
-In order to play nice with PHP's stream handling, the `Exception` will be
-transformed to a PHP warning instead:
+In order to play nice with PHP's stream handling,
+the `Exception` will be transformed to a PHP warning instead:
 
 ```php
 Filter\append($stream, function ($chunk) {
@@ -126,7 +125,8 @@ Filter\append($stream, function ($chunk) {
 fwrite($stream, 'hello');
 ```
 
-The optional `$read_write` parameter can be used to only invoke the `$callback` when either writing to the stream or only when reading from the stream:
+The optional `$read_write` parameter can be used to only invoke the `$callback`
+when either writing to the stream or only when reading from the stream:
 
 ```php
 Filter\append($stream, function ($chunk) {
@@ -139,6 +139,8 @@ Filter\append($stream, function ($chunk) {
     return $chunk;
 }, STREAM_FILTER_READ);
 ```
+
+This function returns a filter resource which can be passed to [`remove()`](#remove).
 
 > Note that once a filter has been added to stream, the stream can no longer be passed to
 > [`stream_select()`](https://www.php.net/manual/en/function.stream-select.php)
@@ -153,13 +155,12 @@ Filter\append($stream, function ($chunk) {
 
 ### prepend()
 
-The `prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)` function can be used to
+The `prepend(resource<stream> $stream, callable $callback, int $read_write = STREAM_FILTER_ALL): resource<stream filter>` function can be used to
 prepend a filter callback to the given stream.
 
 Each stream can have a list of filters attached.
 This function prepends a filter to the start of this list.
 
-This function returns a filter resource which can be passed to [`remove()`](#remove).
 If the given filter can not be added, it throws an `Exception`.
 
 ```php
@@ -169,13 +170,15 @@ $filter = Filter\prepend($stream, function ($chunk) {
 });
 ```
 
+This function returns a filter resource which can be passed to [`remove()`](#remove).
+
 Except for the position in the list of filters, this function behaves exactly
 like the [`append()`](#append) function.
 For more details about its behavior, see also the [`append()`](#append) function.
 
 ### fun()
 
-The `fun($filter, $parameters = null)` function can be used to
+The `fun(string $filter, mixed $parameters = null): callable` function can be used to
 create a filter function which uses the given built-in `$filter`.
 
 PHP comes with a useful set of [built-in filters](https://www.php.net/manual/en/filters.php).
@@ -189,8 +192,8 @@ assert('grfg' === $fun('test'));
 assert('test' === $fun($fun('test'));
 ```
 
-Please note that not all filter functions may be available depending on installed
-PHP extensions and the PHP version in use.
+Please note that not all filter functions may be available depending 
+on installed PHP extensions and the PHP version in use.
 In particular, [HHVM](https://hhvm.com/) may not offer the same filter functions
 or parameters as Zend PHP.
 Accessing an unknown filter function will result in a `RuntimeException`:
@@ -248,7 +251,7 @@ If you feel some test case is missing or outdated, we're happy to accept PRs! :)
 
 ### remove()
 
-The `remove($filter)` function can be used to
+The `remove(resource<stream filter> $filter): bool` function can be used to
 remove a filter previously added via [`append()`](#append) or [`prepend()`](#prepend).
 
 ```php
