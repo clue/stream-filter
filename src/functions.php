@@ -108,10 +108,13 @@ function append($stream, $callback, $read_write = STREAM_FILTER_ALL)
 {
     $ret = @stream_filter_append($stream, register(), $read_write, $callback);
 
+    // PHP 8 throws above on type errors, older PHP and memory issues can throw here
+    // @codeCoverageIgnoreStart
     if ($ret === false) {
         $error = error_get_last() + array('message' => '');
         throw new RuntimeException('Unable to append filter: ' . $error['message']);
     }
+    // @codeCoverageIgnoreEnd
 
     return $ret;
 }
@@ -148,10 +151,13 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
 {
     $ret = @stream_filter_prepend($stream, register(), $read_write, $callback);
 
+    // PHP 8 throws above on type errors, older PHP and memory issues can throw here
+    // @codeCoverageIgnoreStart
     if ($ret === false) {
         $error = error_get_last() + array('message' => '');
         throw new RuntimeException('Unable to prepend filter: ' . $error['message']);
     }
+    // @codeCoverageIgnoreEnd
 
     return $ret;
 }
@@ -298,7 +304,9 @@ function fun($filter, $parameters = null)
 function remove($filter)
 {
     if (@stream_filter_remove($filter) === false) {
-        throw new RuntimeException('Unable to remove given filter');
+        // PHP 8 throws above on type errors, older PHP and memory issues can throw here
+        $error = error_get_last();
+        throw new RuntimeException('Unable to remove filter: ' . $error['message']);
     }
 }
 
