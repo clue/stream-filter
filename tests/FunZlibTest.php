@@ -5,7 +5,7 @@ namespace Clue\Tests\StreamFilter;
 use Clue\StreamFilter;
 use PHPUnit\Framework\TestCase;
 
-class BuiltInZlibTest extends TestCase
+class FunZlibTest extends TestCase
 {
     public function testFunZlibDeflateHelloWorld()
     {
@@ -18,7 +18,7 @@ class BuiltInZlibTest extends TestCase
 
     public function testFunZlibDeflateEmpty()
     {
-        if (PHP_VERSION >= 7) $this->markTestSkipped('Not supported on PHP7 (empty string does not invoke filter)');
+        if (PHP_VERSION >= 7) $this->markTestSkipped('Not supported on PHP 7+ (empty string does not invoke filter)');
 
         $deflate = StreamFilter\fun('zlib.deflate');
 
