@@ -337,6 +337,8 @@ class FilterTest extends TestCase
 
     public function testAppendInvalidStreamIsRuntimeError()
     {
+        if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
+
         $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
         StreamFilter\append(false, function () { });
@@ -344,6 +346,8 @@ class FilterTest extends TestCase
 
     public function testPrependInvalidStreamIsRuntimeError()
     {
+        if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
+
         $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
         StreamFilter\prepend(false, function () { });
@@ -351,6 +355,8 @@ class FilterTest extends TestCase
 
     public function testRemoveInvalidFilterIsRuntimeError()
     {
+        if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
+
         $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid filters)');
         StreamFilter\remove(false);
@@ -403,5 +409,4 @@ class FilterTest extends TestCase
             $this->assertContains($needle, $haystack);
         }
     }
-
 }
