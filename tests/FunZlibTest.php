@@ -53,6 +53,17 @@ class FunZlibTest extends TestCase
         $this->assertEquals('hello world', $data);
     }
 
+    public function testFunGunzipHelloWorld()
+    {
+        if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (no GZIP encoding supported)');
+
+        $gunzip = StreamFilter\fun('zlib.inflate', array('window' => 15 | 16));
+
+        $data = $gunzip(gzencode('hello world')) . $gunzip();
+
+        $this->assertEquals('hello world', $data);
+    }
+
     public function testFunZlibInflateEmpty()
     {
         $inflate = StreamFilter\fun('zlib.inflate');

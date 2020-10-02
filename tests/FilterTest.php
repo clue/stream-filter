@@ -357,9 +357,29 @@ class FilterTest extends TestCase
     {
         if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
 
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException('RuntimeException', 'Unable to remove filter: stream_filter_remove() expects parameter 1 to be resource, ');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid filters)');
         StreamFilter\remove(false);
+    }
+
+    /**
+     * @depends testAppendEndEventWillBeCalledOnRemove
+     */
+    public function testRemoveThrowsWhenAppendThrowsOnEvent()
+    {
+        if (PHP_VERSION < 7) $this->markTestSkipped('Not supported on legacy PHP (engine crashes)');
+
+        $stream = $this->createStream();
+
+        $filter = StreamFilter\append($stream, function ($chunk = null) {
+            if ($chunk === null) {
+                throw new \DomainException();
+            }
+            return $chunk;
+        });
+
+        $this->setExpectedException('RuntimeException', 'Unable to remove filter: stream_filter_remove(): Unable to flush filter, not removing');
+        StreamFilter\remove($filter);
     }
 
     public function testInvalidCallbackIsInvalidArgument()
