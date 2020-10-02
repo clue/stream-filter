@@ -5,6 +5,7 @@ A simple and modern approach to stream filtering in PHP
 **Table of contents**
 
 * [Why?](#why)
+* [Support us](#support-us)
 * [Usage](#usage)
   * [append()](#append)
   * [prepend()](#prepend)
@@ -38,6 +39,16 @@ This project aims to make these features more accessible to a broader audience.
   Custom filters require trivial effort.
 * **Good test coverage** -
   Comes with an automated tests suite and is regularly tested in the *real world*
+
+## Support us
+
+We invest a lot of time developing, maintaining and updating our awesome
+open-source projects. You can help us sustain this high-quality of our work by
+[becoming a sponsor on GitHub](https://github.com/sponsors/clue). Sponsors get
+numerous benefits in return, see our [sponsoring page](https://github.com/sponsors/clue)
+for details.
+
+Let's take these projects to the next level together! 🚀
 
 ## Usage
 
@@ -278,7 +289,7 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/stream-filter:^1.4.1
+$ composer require clue/stream-filter:^1.5
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
