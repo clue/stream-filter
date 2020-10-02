@@ -58,6 +58,14 @@ Alternatively, you can also refer to them with their fully-qualified name:
 \Clue\StreamFilter\append(…);
 ```
 
+As of PHP 5.6+ you can also import each required function into your code like this:
+
+```php
+use function Clue\StreamFilter\append;
+
+append(…);
+```
+
 ### append()
 
 The `append(resource<stream> $stream, callable $callback, int $read_write = STREAM_FILTER_ALL): resource<stream filter>` function can be used to
