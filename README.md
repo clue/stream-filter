@@ -1,4 +1,6 @@
-# clue/stream-filter [![Build Status](https://travis-ci.org/clue/php-stream-filter.svg?branch=master)](https://travis-ci.org/clue/php-stream-filter)
+# clue/stream-filter
+
+[![CI status](https://github.com/clue/stream-filter/workflows/CI/badge.svg)](https://github.com/clue/stream-filter/actions)
 
 A simple and modern approach to stream filtering in PHP
 
@@ -295,7 +297,7 @@ $ composer require clue/stream-filter:^1.5
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
-extensions and supports running on legacy PHP 5.3 through current PHP 7+ and
+extensions and supports running on legacy PHP 5.3 through current PHP 8+ and
 HHVM.
 It's *highly recommended to use PHP 7+* for this project.
 Older PHP versions may suffer from a number of inconsistencies documented above.
