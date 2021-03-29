@@ -1,4 +1,6 @@
-# clue/stream-filter [![Build Status](https://travis-ci.org/clue/php-stream-filter.svg?branch=master)](https://travis-ci.org/clue/php-stream-filter)
+# clue/stream-filter
+
+[![CI status](https://github.com/clue/stream-filter/workflows/CI/badge.svg)](https://github.com/clue/stream-filter/actions)
 
 A simple and modern approach to stream filtering in PHP
 
