@@ -367,7 +367,7 @@ class FilterTest extends TestCase
      */
     public function testRemoveThrowsWhenAppendThrowsOnEvent()
     {
-        if (PHP_VERSION < 7) $this->markTestSkipped('Not supported on legacy PHP (engine crashes)');
+        if (PHP_VERSION < 7 || defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on legacy PHP (engine crashes)');
 
         $stream = $this->createStream();
 
