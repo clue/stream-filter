@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.0 (2022-02-21)
+
+*   Feature: Support PHP 8.1 release.
+    (#45 by @clue)
+
+*   Improve documentation to use fully-qualified function names.
+    (#43 by @SimonFrings and #42 by @PaulRotmann)
+
+*   Improve test suite and use GitHub actions for continuous integration (CI).
+    (#39 and #40 by @SimonFrings)
+
 ## 1.5.0 (2020-10-02)
 
 *   Feature: Improve performance by using global imports.
