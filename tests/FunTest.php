@@ -35,10 +35,19 @@ class FunTest extends TestCase
         $rot('test');
     }
 
-    public function testFunInvalid()
+    public function testFunInvalidWithoutCallingCustomErrorHandler()
     {
         $this->setExpectedException('RuntimeException');
+
+        $error = null;
+        set_error_handler(function ($_, $errstr) use (&$error) {
+            $error = $errstr;
+        });
+
         Filter\fun('unknown');
+
+        restore_error_handler();
+        $this->assertNull($error);
     }
 
     public function testFunInBase64()
