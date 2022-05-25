@@ -1,6 +1,6 @@
 # clue/stream-filter
 
-[![CI status](https://github.com/clue/stream-filter/workflows/CI/badge.svg)](https://github.com/clue/stream-filter/actions)
+[![CI status](https://github.com/clue/stream-filter/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/stream-filter/actions)
 [![installs on Packagist](https://img.shields.io/packagist/dt/clue/stream-filter?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/stream-filter)
 
 A simple and modern approach to stream filtering in PHP
