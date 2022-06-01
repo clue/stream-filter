@@ -335,31 +335,118 @@ class FilterTest extends TestCase
         $this->assertContainsString('test', $errors[0]);
     }
 
-    public function testAppendInvalidStreamIsRuntimeError()
+    public function testAppendThrowsForInvalidEncodingAndUnsetsUsedErrorHandler()
+    {
+        $handler = set_error_handler(function () { });
+
+        restore_error_handler();
+
+        try {
+            StreamFilter\append(false, function () { });
+        } catch (\TypeError $e) {
+            // handle Error to unset Error handler afterwards (PHP >= 8.0)
+        } catch (\RunTimeException $e) {
+            // handle Error to unset Error handler afterwards (PHP < 8.0)
+        }
+
+        $checkHandler = set_error_handler(function () { });
+        restore_error_handler();
+
+        $this->assertEquals($handler, $checkHandler);
+    }
+
+    public function testAppendInvalidStreamIsRuntimeErrorWithoutCallingCustomErrorHandler()
     {
         if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
 
         $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
+
+        $error = null;
+        set_error_handler(function ($_, $errstr) use (&$error) {
+            $error = $errstr;
+        });
+
         StreamFilter\append(false, function () { });
+
+        restore_error_handler();
+        $this->assertNull($error);
     }
 
-    public function testPrependInvalidStreamIsRuntimeError()
+    public function testPrependThrowsForInvalidEncodingAndUnsetsUsedErrorHandler()
+    {
+        $handler = set_error_handler(function () { });
+
+        restore_error_handler();
+
+        try {
+            StreamFilter\prepend(false, function () { });
+        } catch (\TypeError $e) {
+            // handle Error to unset Error handler afterwards (PHP >= 8.0)
+        } catch (\RunTimeException $e) {
+            // handle Error to unset Error handler afterwards (PHP < 8.0)
+        }
+
+        $checkHandler = set_error_handler(function () { });
+        restore_error_handler();
+
+        $this->assertEquals($handler, $checkHandler);
+    }
+
+    public function testPrependInvalidStreamIsRuntimeErrorWithoutCallingCustomErrorHandler()
     {
         if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
 
         $this->setExpectedException('RuntimeException');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid stream)');
+
+        $error = null;
+        set_error_handler(function ($_, $errstr) use (&$error) {
+            $error = $errstr;
+        });
+
         StreamFilter\prepend(false, function () { });
+
+        restore_error_handler();
+        $this->assertNull($error);
     }
 
-    public function testRemoveInvalidFilterIsRuntimeError()
+    public function testRemoveThrowsForInvalidEncodingAndUnsetsUsedErrorHandler()
+    {
+        $handler = set_error_handler(function () { });
+
+        restore_error_handler();
+
+        try {
+            StreamFilter\remove(false);
+        } catch (\TypeError $e) {
+            // handle Error to unset Error handler afterwards (PHP >= 8.0)
+        } catch (\RunTimeException $e) {
+            // handle Error to unset Error handler afterwards (PHP < 8.0)
+        }
+
+        $checkHandler = set_error_handler(function () { });
+        restore_error_handler();
+
+        $this->assertEquals($handler, $checkHandler);
+    }
+
+    public function testRemoveInvalidFilterIsRuntimeErrorWithoutCallingCustomErrorHandler()
     {
         if (PHP_VERSION >= 8) $this->markTestSkipped('Not supported on PHP 8+ (PHP 8 throws TypeError automatically)');
 
         $this->setExpectedException('RuntimeException', 'Unable to remove filter: stream_filter_remove() expects parameter 1 to be resource, ');
         if (defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on HHVM (does not reject invalid filters)');
+
+        $error = null;
+        set_error_handler(function ($_, $errstr) use (&$error) {
+            $error = $errstr;
+        });
+
         StreamFilter\remove(false);
+
+        restore_error_handler();
+        $this->assertNull($error);
     }
 
     /**
