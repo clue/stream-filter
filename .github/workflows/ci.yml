@@ -29,10 +29,16 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: xdebug
       - run: composer install
-      - run: vendor/bin/phpunit --coverage-text
+      - run: vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml
         if: ${{ matrix.php >= 7.3 }}
-      - run: vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy
+      - run: vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml -c phpunit.xml.legacy
         if: ${{ matrix.php < 7.3 }}
+      - name: Check 100% code coverage
+        shell: php {0}
+        run: |
+          <?php
+          $metrics = simplexml_load_file('clover.xml')->project->metrics;
+          exit((int) $metrics['statements'] === (int) $metrics['coveredstatements'] ? 0 : 1);
 
   PHPUnit-hhvm:
     name: PHPUnit (HHVM)
