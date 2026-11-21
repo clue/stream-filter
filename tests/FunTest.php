@@ -44,10 +44,13 @@ class FunTest extends TestCase
             $error = $errstr;
         });
 
-        Filter\fun('unknown');
-
-        restore_error_handler();
-        $this->assertNull($error);
+        try {
+            Filter\fun('unknown');
+        } catch (\RuntimeException $e) {
+            restore_error_handler();
+            $this->assertNull($error);
+            throw $e;
+        }
     }
 
     public function testFunInBase64()
