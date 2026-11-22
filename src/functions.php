@@ -113,6 +113,10 @@ function append($stream, $callback, $read_write = STREAM_FILTER_ALL)
 
     try {
         $ret = \stream_filter_append($stream, register(), $read_write, $callback);
+    } catch (\Exception $e) {
+        // Invalid callback throws InvalidArgumentException from CallbackFilter::onCreate()
+        \restore_error_handler();
+        throw $e;
     } catch (\TypeError $e) { // @codeCoverageIgnoreStart
         // Throws TypeError on PHP 8.0+
         \restore_error_handler();
@@ -170,6 +174,10 @@ function prepend($stream, $callback, $read_write = STREAM_FILTER_ALL)
 
     try {
         $ret = \stream_filter_prepend($stream, register(), $read_write, $callback);
+    } catch (\Exception $e) {
+        // Invalid callback throws InvalidArgumentException from CallbackFilter::onCreate()
+        \restore_error_handler();
+        throw $e;
     } catch (\TypeError $e) { // @codeCoverageIgnoreStart
         // Throws TypeError on PHP 8.0+
         \restore_error_handler();

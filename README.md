@@ -319,6 +319,12 @@ To run the test suite, go to the project root and run:
 vendor/bin/phpunit
 ```
 
+On PHP < 8.4 (PHPUnit 9.6 and older), use the legacy configuration instead:
+
+```bash
+vendor/bin/phpunit -c phpunit.xml.legacy
+```
+
 The test suite is set up to always ensure 100% code coverage across all
 supported environments. If you have the Xdebug extension installed, you can also
 generate a code coverage report locally like this:

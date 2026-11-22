@@ -3,6 +3,8 @@
 namespace Clue\Tests\StreamFilter;
 
 use Clue\StreamFilter;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 
 class FilterTest extends TestCase
@@ -244,8 +246,6 @@ class FilterTest extends TestCase
 
     public function testAppendThrows()
     {
-        $this->createErrorHandler($errors);
-
         $stream = $this->createStream();
         $this->createErrorHandler($errors);
 
@@ -263,6 +263,7 @@ class FilterTest extends TestCase
     /**
      * @doesNotPerformAssertions
      */
+    #[DoesNotPerformAssertions]
     public function testAppendThrowsDuringEnd()
     {
         $stream = $this->createStream();
@@ -452,6 +453,7 @@ class FilterTest extends TestCase
     /**
      * @depends testAppendEndEventWillBeCalledOnRemove
      */
+    #[Depends('testAppendEndEventWillBeCalledOnRemove')]
     public function testRemoveThrowsWhenAppendThrowsOnEvent()
     {
         if (PHP_VERSION < 7 || defined('HHVM_VERSION')) $this->markTestSkipped('Not supported on legacy PHP (engine crashes)');
@@ -475,6 +477,14 @@ class FilterTest extends TestCase
         $stream = $this->createStream();
 
         StreamFilter\append($stream, 'a-b-c');
+    }
+
+    public function testPrependInvalidCallbackIsInvalidArgument()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $stream = $this->createStream();
+
+        StreamFilter\prepend($stream, 'a-b-c');
     }
 
     private function createStream()
