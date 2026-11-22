@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- PHPUnit configuration file with old format for legacy PHPUnit -->
+<!-- PHPUnit configuration file with old format for legacy PHPUnit 4.8 - 9.6 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/4.8/phpunit.xsd"
          bootstrap="vendor/autoload.php"
-         colors="true">
+         colors="true"
+         convertDeprecationsToExceptions="true">
     <testsuites>
         <testsuite name="Stream Filter Test Suite">
             <directory>./tests/</directory>
@@ -15,4 +16,7 @@
             <directory>./src/</directory>
         </whitelist>
     </filter>
+    <php>
+        <ini name="error_reporting" value="-1" />
+    </php>
 </phpunit>

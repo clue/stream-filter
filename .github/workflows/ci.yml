@@ -34,7 +34,7 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: xdebug
       - run: composer install
-      - run: vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml ${{ matrix.php < 7.3 && '-c phpunit.xml.legacy' || '' }}
+      - run: vendor/bin/phpunit --coverage-text --coverage-clover=clover.xml ${{ matrix.php < 8.4 && '-c phpunit.xml.legacy' || '' }}
       - name: Check 100% code coverage
         shell: php {0}
         run: |
@@ -56,4 +56,4 @@ jobs:
       - name: Run hhvm vendor/bin/phpunit
         uses: docker://hhvm/hhvm:3.30-lts-latest
         with:
-          args: hhvm vendor/bin/phpunit
+          args: hhvm vendor/bin/phpunit -c phpunit.xml.legacy
